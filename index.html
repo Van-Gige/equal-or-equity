@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equal or Equity? 평등일까, 공평일까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0f9e94; --teal-d:#0b7a72; --mint:#d6f5ec; --mint-d:#9fe3cf;
+    --pink:#ffd6e7; --pink-d:#f28bb4; --ink:#1f2d3a; --soft:#5b6b78;
+    --paper:#ffffff; --bg:#eef6f4; --yes:#18a058; --no:#e0475b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden}
+  .window{position:absolute;inset:14px;background:var(--paper);border-radius:18px;box-shadow:0 10px 40px rgba(15,60,60,.15);display:flex;flex-direction:column;overflow:hidden}
+  .chrome{background:var(--teal);color:#fff;display:flex;align-items:center;gap:14px;padding:10px 18px;min-height:56px}
+  .dots{display:flex;gap:7px}.dots i{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.55);display:block}
+  .chrome .title{font-weight:900;font-size:clamp(16px,1.8vw,24px);flex:1}
+  .chrome .round{font-weight:800;font-size:clamp(14px,1.5vw,20px);opacity:.95}
+  .stars{font-size:clamp(16px,1.8vw,24px);letter-spacing:2px;min-width:40px;text-align:right}
+  .iconbtn{background:rgba(255,255,255,.18);border:0;color:#fff;font:inherit;font-weight:800;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:15px}
+  .iconbtn:hover{background:rgba(255,255,255,.3)}
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 3vw;gap:2vh;position:relative;min-height:0}
+  h1{font-size:clamp(40px,6.5vw,96px);font-weight:900;line-height:1.05;text-align:center}
+  h2{font-size:clamp(28px,3.8vw,56px);font-weight:900;text-align:center;line-height:1.15}
+  .ko{color:var(--soft);font-weight:800}
+  .sub{font-size:clamp(20px,2.4vw,34px);text-align:center;font-weight:800;line-height:1.3}
+  .eq{color:var(--teal-d)} .ey{color:#c2185b}
+  .btn{font:inherit;font-weight:900;border:0;border-radius:20px;cursor:pointer;padding:.55em 1.3em;font-size:clamp(22px,2.6vw,38px);box-shadow:0 6px 0 rgba(0,0,0,.15);transition:transform .08s}
+  .btn:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.15)}
+  .btn.go{background:var(--teal);color:#fff}
+  .btn.ghost{background:#eef2f4;color:var(--ink)}
+  .row{display:flex;gap:2vw;align-items:center;justify-content:center;flex-wrap:wrap}
+  .hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#9aa8b2;font-size:14px;font-weight:700}
+
+  /* concept cards */
+  .cards{display:flex;gap:3vw;justify-content:center;width:100%}
+  .card{flex:1;max-width:620px;border-radius:26px;padding:2.4vh 2vw;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.2vh;animation:pop .35s ease-out}
+  .card.eqc{background:var(--mint);border:5px solid var(--mint-d)}
+  .card.eyc{background:var(--pink);border:5px solid var(--pink-d)}
+  .card .word{font-size:clamp(34px,4.4vw,64px);font-weight:900}
+  .card .def{font-size:clamp(22px,2.4vw,36px);font-weight:900}
+  .card .signal{font-size:clamp(16px,1.6vw,24px);font-weight:800;color:var(--soft)}
+  .card.hidden{visibility:hidden}
+  @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes fadeup{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+
+  /* scene */
+  .caption{font-size:clamp(24px,2.9vw,42px);font-weight:900;text-align:center;line-height:1.2}
+  .caption .ko{display:block;font-size:.72em;margin-top:.2em}
+  .scene{width:min(1100px,94%);flex:1;min-height:200px;background:#f7fbfa;border-radius:24px;border:3px solid #e2efec;display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden}
+  .people{display:flex;gap:4vw;align-items:flex-end;justify-content:center;padding-bottom:2vh;height:100%}
+  .person{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative;height:100%}
+  .face{line-height:1}
+  .name{font-size:clamp(16px,1.8vw,26px);font-weight:900;margin-top:.3em;text-align:center;line-height:1.1}
+  .name small{display:block;color:var(--soft);font-size:.8em}
+  .item{line-height:1;margin-top:.15em;min-height:1em;display:flex;align-items:center;justify-content:center;gap:2px}
+  .note{font-size:clamp(14px,1.4vw,20px);font-weight:900;color:var(--soft);margin-top:.2em;min-height:1.2em}
+  .mark{position:absolute;top:4px;right:-18px;font-size:clamp(30px,3.4vw,52px);font-weight:900;animation:pop .3s ease-out}
+  .mark.y{color:var(--yes)} .mark.n{color:var(--no)}
+  .backdrop{position:absolute;top:12px;left:18px;font-size:clamp(16px,1.6vw,24px);font-weight:900;color:var(--soft)}
+
+  /* fence scene */
+  .fence-scene{position:relative;width:100%;height:100%}
+  .field{position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(#c9f0d6,#a6e3b8);display:flex;align-items:center;justify-content:center;font-size:clamp(26px,3vw,44px);gap:3vw}
+  .ground{position:absolute;left:0;right:0;bottom:0;background:#cfe9c4}
+  .fence{position:absolute;left:0;right:0;background:repeating-linear-gradient(90deg,#c58a52 0 34px,#a8713f 34px 38px);border-top:8px solid #8d5c31}
+  .fpeople{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:7vw;align-items:flex-end}
+  .fp{display:flex;flex-direction:column;align-items:center;position:relative}
+  .fp .face{line-height:.9}
+  .boxstack{display:flex;flex-direction:column}
+  .box{background:#e0a96d;border:3px solid #9c6a35;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#7a4e22}
+  .fp .tag{position:absolute;bottom:-1px;transform:translateY(100%);font-weight:900;font-size:clamp(14px,1.4vw,20px);background:#fff;border-radius:8px;padding:0 8px;white-space:nowrap}
+
+  /* answer buttons */
+  .answers{display:flex;gap:2.5vw;justify-content:center}
+  .ans{font:inherit;cursor:pointer;border-radius:22px;padding:.45em 1.1em;font-size:clamp(24px,3vw,44px);font-weight:900;line-height:1.1;border:5px solid transparent;box-shadow:0 6px 0 rgba(0,0,0,.12);min-width:min(34vw,420px)}
+  .ans small{display:block;font-size:.55em;font-weight:800;opacity:.8}
+  .ans.eqb{background:var(--mint);border-color:var(--mint-d);color:var(--teal-d)}
+  .ans.eyb{background:var(--pink);border-color:var(--pink-d);color:#b0124f}
+  .ans:disabled{cursor:default;opacity:.35}
+  .ans.right{opacity:1;outline:6px solid var(--yes);outline-offset:4px}
+  .ans.picked-wrong{opacity:1;outline:6px dashed var(--no);outline-offset:4px}
+
+  .reveal{width:min(1100px,94%);border-radius:22px;padding:1.4vh 2vw;text-align:center;animation:fadeup .4s ease-out}
+  .reveal.eqr{background:var(--mint);border:4px solid var(--mint-d)}
+  .reveal.eyr{background:var(--pink);border:4px solid var(--pink-d)}
+  .reveal .big{font-size:clamp(24px,2.8vw,40px);font-weight:900}
+  .reveal .look{font-size:clamp(18px,2vw,28px);font-weight:800;margin-top:.3em}
+  .reveal .look .ko{display:block;font-size:.85em}
+
+  .overlay{position:absolute;inset:0;background:rgba(15,158,148,.95);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;z-index:5;animation:pop .2s}
+  .count{font-size:clamp(120px,20vw,300px);font-weight:900;line-height:1}
+  .signals{display:flex;gap:5vw;font-size:clamp(22px,2.6vw,38px);font-weight:900;text-align:center}
+  .signals div{background:rgba(255,255,255,.15);border-radius:20px;padding:1vh 2vw}
+  .signals small{display:block;font-size:.6em;opacity:.9}
+  .feedback{font-size:clamp(28px,3.4vw,50px);font-weight:900;animation:pop .3s}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="chrome">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="title">Equal or Equity? 평등일까, 공평일까?</div>
+    <div class="round" id="roundLabel"></div>
+    <div class="stars" id="stars"></div>
+    <button class="iconbtn" id="fsBtn" title="Full screen (F)">⛶ Full screen</button>
+  </div>
+  <div class="stage" id="stage"></div>
+</div>
+
+<script>
+// ---------- characters ----------
+const P = {
+  Mina:  {n:'Mina',  k:'미나',   f:'👧🏻'},
+  Leo:   {n:'Leo',   k:'레오',   f:'🧑🏻‍🦽'},
+  Jia:   {n:'Jia',   k:'지아',   f:'👧'},
+  Teddy: {n:'Teddy', k:'테디',   f:'🧒🏼'},
+  Soliha:{n:'Soliha',k:'솔리하', f:'🧕🏻'},
+};
+const STAIRS = '<svg width="1em" height="1em" viewBox="0 0 100 100"><polygon points="5,95 5,75 30,75 30,55 55,55 55,35 80,35 80,15 95,15 95,95" fill="#b9c4cc" stroke="#7d8b95" stroke-width="4"/></svg>';
+const RAMP   = '<svg width="1em" height="1em" viewBox="0 0 100 100"><polygon points="5,95 95,20 95,95" fill="#5fd0bf" stroke="#0b7a72" stroke-width="4"/></svg>';
+
+// answer: 'eq' = Equality, 'ey' = Equity
+const ROUNDS = [
+  { a:'eq', type:'fence', boxes:{Teddy:1, Soliha:1, Jia:1},
+    en:'Everyone gets 1 box.', ko:'모두 상자를 1개씩 받아요.',
+    lookEn:'Look again! Teddy didn’t need a box… and Jia still can’t see the game!',
+    lookKo:'다시 보세요! 테디는 상자가 필요 없었고, 지아는 아직도 경기가 안 보여요!' },
+  { a:'ey', type:'fence', boxes:{Teddy:0, Soliha:1, Jia:2},
+    en:'Each friend gets the boxes they need.', ko:'친구마다 필요한 만큼 상자를 받아요.',
+    lookEn:'Now everyone can see the game!', lookKo:'이제 모두 경기를 볼 수 있어요!' },
+  { a:'eq', type:'row', backdrop:'🍎🍎🍎  3 apples → 15 pieces',
+    people:[['Mina','🍎🍎🍎'],['Jia','🍎🍎🍎'],['Soliha','🍎🍎🍎'],['Leo','🍎🍎🍎'],['Teddy','🍎🍎🍎']], itemSize:34,
+    en:'5 friends share 3 apples. Everyone gets 3 pieces.', ko:'사과 3개를 5명이 나눠요. 모두 3조각씩 받아요.',
+    lookEn:'Everyone got the same amount.', lookKo:'모두 같은 양을 받았어요.' },
+  { a:'ey', type:'row', backdrop:'🏫 School door',
+    people:[['Jia',STAIRS,'','y'],['Soliha',STAIRS,'','y'],['Leo',RAMP,'ramp 경사로','y']], itemSize:80,
+    en:'Leo uses a wheelchair. The school builds a ramp for him.', ko:'레오는 휠체어를 타요. 학교가 레오를 위해 경사로를 만들어요.',
+    lookEn:'Leo needs a ramp. Now everyone can get in!', lookKo:'레오는 경사로가 필요해요. 이제 모두 들어갈 수 있어요!' },
+  { a:'ey', type:'row', backdrop:'📋 Board 칠판',
+    people:[['Teddy','','','y'],['Mina','👓','glasses 안경','y'],['Soliha','','','y']], itemSize:70,
+    en:'Mina can’t see the board. She gets glasses.', ko:'미나는 칠판이 잘 안 보여요. 미나는 안경을 받아요.',
+    lookEn:'Only Mina needed glasses. Now everyone can read the board!', lookKo:'안경이 필요한 사람은 미나뿐이었어요. 이제 모두 칠판을 읽을 수 있어요!' },
+  { a:'eq', type:'row', backdrop:'👟 Size 210',
+    people:[['Teddy','👟','too small 작아요','n',60],['Soliha','👟','just right 딱 맞아요','y',60],['Jia','👟','too big 커요','n',60]], itemSize:60,
+    en:'Everyone gets the same size shoes.', ko:'모두 같은 크기의 신발을 받아요.',
+    lookEn:'Look again! Same shoes… but they don’t fit Teddy or Jia!', lookKo:'다시 보세요! 똑같은 신발이지만 테디와 지아에게는 맞지 않아요!' },
+  { a:'ey', type:'row', backdrop:'👟 My size 내 사이즈',
+    people:[['Teddy','👟','','y',86],['Soliha','👟','','y',62],['Jia','👟','','y',42]], itemSize:60,
+    en:'Everyone gets shoes in their size.', ko:'모두 자기 발에 맞는 신발을 받아요.',
+    lookEn:'Different sizes — and they fit everyone!', lookKo:'크기는 달라도 모두에게 꼭 맞아요!' },
+  { a:'eq', type:'row', backdrop:'🎲 Game pieces 게임 말',
+    people:[['Mina','🟥'],['Leo','🔷'],['Jia','🟡'],['Teddy','🟢'],['Soliha','🟣']], itemSize:54,
+    en:'Everyone takes ONE game piece.', ko:'모두 게임 말을 한 개씩 받아요.',
+    lookEn:'The pieces look different, but everyone gets one.', lookKo:'게임 말의 모습은 달라도 모두 한 개씩 받아요.' },
+  { a:'ey', type:'row', backdrop:'📚 Korean class 국어 시간',
+    people:[['Mina','','','y'],['Teddy','🧑‍🤝‍🧑','helper 도우미','y'],['Jia','','','y']], itemSize:70,
+    en:'Teddy is learning Korean. He gets a helper buddy in class.', ko:'테디는 한국어를 배우고 있어요. 수업 시간에 도와주는 친구가 생겨요.',
+    lookEn:'Teddy needs help with Korean. Now he can learn too!', lookKo:'테디는 한국어 도움이 필요해요. 이제 테디도 함께 배울 수 있어요!' },
+  { a:'eq', type:'row', backdrop:'⚽ After soccer 축구 후',
+    people:[['Mina','🥤'],['Leo','🥤'],['Jia','🥤'],['Teddy','🥤'],['Soliha','🥤']], itemSize:54,
+    en:'After soccer, everyone gets 1 drink of water.', ko:'축구가 끝나고 모두 물을 한 컵씩 받아요.',
+    lookEn:'Everyone got the same.', lookKo:'모두 같은 것을 받았어요.' },
+];
+
+const DEF = {
+  eq:{word:'Equality', ko:'평등', def:'Everyone gets the same.', dko:'모두가 같은 것을 받아요.', sig:'🙌 = Arms make an equal sign', sko:'팔로 = 모양 만들기', cls:'eq'},
+  ey:{word:'Equity',   ko:'공평', def:'Everyone gets what they need.', dko:'모두가 필요한 것을 받아요.', sig:'🫶 = Hands on your heart', sko:'손을 가슴에 얹기', cls:'ey'},
+};
+
+// ---------- state ----------
+const S = {screen:'title', learn:0, r:0, phase:'ask', picked:null, stars:0};
+const stage = document.getElementById('stage');
+const $ = (h)=>{stage.innerHTML=h;};
+
+function header(){
+  document.getElementById('roundLabel').textContent = S.screen==='round' ? `Round ${S.r+1} / ${ROUNDS.length}` : '';
+  document.getElementById('stars').textContent = S.screen==='round'||S.screen==='end' ? '⭐'.repeat(S.stars) : '';
+}
+
+function render(){
+  header();
+  if(S.screen==='title') return renderTitle();
+  if(S.screen==='learn') return renderLearn();
+  if(S.screen==='round') return renderRound();
+  if(S.screen==='end') return renderEnd();
+}
+
+function renderTitle(){
+  $(`<h1><span class="eq">Equality</span> or <span class="ey">Equity</span>?</h1>
+     <div class="sub ko">평등일까요, 공평일까요?</div>
+     <div class="sub" style="font-size:clamp(60px,8vw,120px)">🧒🏼 🧕🏻 👧</div>
+     <button class="btn go" onclick="go('learn')">Start! 시작!</button>
+     <div class="hint">Keys: 1 = Equality · 2 = Equity · C = 3-2-1 countdown · Space/→ = next · F = full screen</div>`);
+}
+
+function cardHTML(k, hidden){
+  const d=DEF[k];
+  return `<div class="card ${k}c ${hidden?'hidden':''}">
+    <div class="word ${d.cls}">${d.word}<br><span class="ko">${d.ko}</span></div>
+    <div class="def">${d.def}<br><span class="ko">${d.dko}</span></div>
+    ${k==='eq'?miniFence({Teddy:1,Soliha:1,Jia:1}):miniFence({Teddy:0,Soliha:1,Jia:2})}
+    <div class="signal">${d.sig}<br>${d.sko}</div>
+  </div>`;
+}
+function miniFence(b){
+  const sizes={Teddy:46,Soliha:36,Jia:26};
+  return `<div style="display:flex;gap:18px;align-items:flex-end;height:110px">` +
+    ['Teddy','Soliha','Jia'].map(n=>`<div style="display:flex;flex-direction:column;align-items:center">
+      <div style="font-size:${sizes[n]}px;line-height:.9">${P[n].f}</div>
+      ${'<div style="width:34px;height:16px;background:#e0a96d;border:2px solid #9c6a35;border-radius:3px"></div>'.repeat(b[n])}
+    </div>`).join('') + `</div>`;
+}
+
+function renderLearn(){
+  $(`<h2>Two big ideas <span class="ko">두 가지 핵심 개념</span></h2>
+     <div class="cards">${cardHTML('eq', false)}${cardHTML('ey', S.learn<1)}</div>
+     <div class="row">
+       <button class="btn go" onclick="next()">${S.learn<1?'Next 다음 →':'Let’s play! 게임 시작! 🎲'}</button>
+     </div>`);
+}
+
+function personRow(r, revealed){
+  const base = r.itemSize||54;
+  return `<div class="people">` + r.people.map(([key,item,note,mark,sz])=>{
+    const p=P[key];
+    const faceSize = 'min(7vw,9vh)';
+    const m = revealed && mark ? `<div class="mark ${mark}">${mark==='y'?'✓':'✕'}</div>` : '';
+    return `<div class="person">
+      ${m}
+      <div class="face" style="font-size:${faceSize}">${p.f}</div>
+      <div class="item" style="font-size:min(${sz||base}px,${((sz||base)/9).toFixed(1)}vh)">${item||'&nbsp;'}</div>
+      <div class="note">${note||''}</div>
+      <div class="name">${p.n}<small>${p.k}</small></div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function fenceScene(r, revealed){
+  // geometry: head height = body + boxes*BOX; fence = 150 units; scaled with --u
+  const H={Teddy:190, Soliha:130, Jia:90}, BOX=40, FENCE=160, BASE=30;
+  const order=['Teddy','Soliha','Jia'];
+  return `<div class="fence-scene" id="fs">
+    <div class="field">⚽ 🏃 🏃‍♀️ 🥅</div>
+    <div class="fence" style="bottom:calc(var(--u) * ${BASE});height:calc(var(--u) * ${FENCE})"></div><div class="ground" style="height:calc(var(--u) * ${BASE})"></div>
+    <div class="fpeople" style="bottom:calc(var(--u) * ${BASE})">` +
+    order.map(n=>{
+      const b=r.boxes[n], top=H[n]+b*BOX, sees = top>FENCE;
+      const m = revealed ? `<div class="mark ${sees?'y':'n'}" style="top:-10px">${sees?'✓':'✕'}</div>` : '';
+      return `<div class="fp">${m}
+        <div class="face" style="font-size:calc(var(--u) * ${H[n]})">${P[n].f}</div>
+        <div class="boxstack">${`<div class="box" style="width:calc(var(--u)*90);height:calc(var(--u)*${BOX})">📦</div>`.repeat(b)}</div>
+        <div class="tag">${P[n].n} ${P[n].k} · ${b} 📦</div>
+      </div>`;
+    }).join('') + `</div></div>`;
+}
+
+function renderRound(){
+  const r=ROUNDS[S.r], rev=S.phase==='reveal';
+  const scene = r.type==='fence' ? fenceScene(r,rev) : `${r.backdrop?`<div class="backdrop">${r.backdrop}</div>`:''}${personRow(r,rev)}`;
+  let bottom;
+  if(!rev){
+    bottom = `<div class="answers">
+        <button class="ans eqb" onclick="pick('eq')">= Equality<small>평등 · same 같은 것</small></button>
+        <button class="ans eyb" onclick="pick('ey')">♥ Equity<small>공평 · need 필요한 것</small></button>
+      </div>
+      <button class="btn ghost" style="font-size:clamp(16px,1.6vw,24px)" onclick="countdown()">3-2-1 Show me! (C)</button>`;
+  } else {
+    const d=DEF[r.a], ok=S.picked===r.a;
+    bottom = `
+      <div class="reveal ${r.a}r">
+        <div class="big">${ok?'🎉 Yes! 맞아요!':'🤔 Not quite! 아쉬워요!'} &nbsp;It’s <span class="${d.cls}">${d.word} (${d.ko})</span> — ${d.def}</div>
+        <div class="look">${r.lookEn}<span class="ko">${r.lookKo}</span></div>
+      </div>
+      <button class="btn go" onclick="next()">${S.r<ROUNDS.length-1?'Next 다음 →':'Finish 끝! 🏁'}</button>`;
+  }
+  $(`<div class="caption">${r.en}<span class="ko">${r.ko}</span></div>
+     <div class="scene" id="scene">${scene}</div>
+     ${bottom}`);
+  sizeFence();
+}
+
+function renderEnd(){
+  $(`<h2>Great job! 잘했어요! 🎉</h2>
+     <div class="sub">${'⭐'.repeat(S.stars)}<br>${S.stars} / ${ROUNDS.length}</div>
+     <div class="cards">${cardHTML('eq',false)}${cardHTML('ey',false)}</div>
+     <div class="sub">The same is not always enough. Sometimes people need different things!<br>
+       <span class="ko">똑같이 나누는 것만으로는 부족할 때도 있어요. 사람마다 필요한 것이 달라요!</span></div>
+     <div class="row"><button class="btn ghost" onclick="restart()">Play again 다시 하기 ↺</button></div>`);
+}
+
+// scale fence scene to the box it sits in
+function sizeFence(){
+  const sc=document.getElementById('scene'), fs=document.getElementById('fs');
+  if(!sc||!fs) return;
+  const u = Math.min(sc.clientHeight/(390), sc.clientWidth/760);
+  fs.style.setProperty('--u', u+'px');
+}
+window.addEventListener('resize', ()=>{ if(S.screen==='round') sizeFence(); });
+
+// ---------- actions ----------
+function go(s){ S.screen=s; S.learn=0; render(); }
+function restart(){ Object.assign(S,{screen:'title',learn:0,r:0,phase:'ask',picked:null,stars:0}); render(); }
+function pick(k){
+  if(S.screen!=='round'||S.phase!=='ask') return;
+  S.picked=k; S.phase='reveal';
+  if(k===ROUNDS[S.r].a) S.stars++;
+  closeOverlay(); render();
+}
+function next(){
+  if(S.screen==='title') return go('learn');
+  if(S.screen==='learn'){ if(S.learn<1){S.learn++; return render();} S.screen='round'; S.r=0; S.phase='ask'; return render(); }
+  if(S.screen==='round' && S.phase==='reveal'){
+    if(S.r<ROUNDS.length-1){ S.r++; S.phase='ask'; S.picked=null; } else { S.screen='end'; }
+    return render();
+  }
+}
+let cdTimer=null;
+function closeOverlay(){ clearInterval(cdTimer); const o=document.getElementById('ov'); if(o) o.remove(); }
+function countdown(){
+  if(S.screen!=='round'||S.phase!=='ask') return;
+  closeOverlay();
+  const o=document.createElement('div'); o.className='overlay'; o.id='ov';
+  o.innerHTML=`<div class="count" id="cnum">3</div>
+    <div class="signals"><div>🙌 =<br>Equality 평등<small>arms make =</small></div><div>🫶<br>Equity 공평<small>hands on heart</small></div></div>`;
+  o.onclick=closeOverlay;
+  stage.appendChild(o);
+  let n=3;
+  cdTimer=setInterval(()=>{
+    n--; const c=document.getElementById('cnum'); if(!c){clearInterval(cdTimer);return;}
+    if(n>0) c.textContent=n;
+    else { c.textContent='Show me!'; c.style.fontSize='clamp(70px,10vw,150px)'; clearInterval(cdTimer);
+           setTimeout(closeOverlay,1600); }
+  },900);
+}
+document.getElementById('fsBtn').onclick=()=>{
+  try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); }catch(e){}
+};
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(k==='1') pick('eq');
+  else if(k==='2') pick('ey');
+  else if(k==='c') countdown();
+  else if(k==='f') document.getElementById('fsBtn').click();
+  else if(k===' '||k==='enter'||k==='arrowright'){ e.preventDefault(); if(document.getElementById('ov')) return; next(); }
+});
+render();
+</script>
+</body>
+</html>
